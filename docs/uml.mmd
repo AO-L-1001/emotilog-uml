@@ -1,0 +1,102 @@
+classDiagram
+  class MainActivity{
+    - LogDatabase db
+    + onCreate(Bundle) void
+    - setupButton(int,String) void
+    <<Responsibilities>>
+    Main screen; record emotion on button click; navigate to LogListActivity and SummaryActivity
+  }
+
+  class LogListActivity{
+    + onCreate(Bundle) void
+    <<Responsibilities>>
+    Display all logs with RecyclerView (emotion + timestamp); allow user to return to main screen
+  }
+
+  class SummaryActivity{
+    + onCreate(Bundle) void
+    <<Responsibilities>>
+    Show daily summary: emotion counts and frequencies; provide clear-all and back functionality
+  }
+
+  class LogEntry{
+    + int id
+    + String emotion
+    + long timestamp
+    + LogEntry(String,long)
+    <<Responsibilities>>
+    Entity class; store each logged emotion and its timestamp
+  }
+
+  class LogDao{
+    <<interface>>
+    + insert(LogEntry) void
+    + getAll() List~LogEntry~
+    + getSummary() List~EmotionCount~
+    + getDailyEmotionCounts() List~DailyEmotionCount~
+    + getDailyTotals() List~DailyTotal~
+    + clearAll() void
+    <<Responsibilities>>
+    Data access operations: insert, query logs, aggregate summaries, and clear logs
+  }
+
+  class LogDatabase{
+    - static LogDatabase instance
+    + logDao() LogDao
+    + static getInstance(Context) LogDatabase
+    <<Responsibilities>>
+    Room database singleton; provides LogDao
+  }
+
+  class EmotionCount{
+    + String emotion
+    + int count
+    <<Responsibilities>>
+    DTO for total emotion summary
+  }
+
+  class DailyEmotionCount{
+    + String day
+    + String emotion
+    + int count
+    <<Responsibilities>>
+    DTO for daily emotion count
+  }
+
+  class DailyTotal{
+    + String day
+    + int total
+    <<Responsibilities>>
+    DTO for daily total count
+  }
+
+  class LogAdapter{
+    - List~LogEntry~ data
+    + LogAdapter(List~LogEntry~)
+    + onCreateViewHolder(...) VH
+    + onBindViewHolder(...) void
+    + getItemCount() int
+    <<Responsibilities>>
+    RecyclerView adapter: bind LogEntry to item view (emotion + timestamp)
+  }
+
+  class VH{
+    + TextView tvEmotion
+    + TextView tvTime
+  }
+
+  MainActivity --> LogDatabase : uses
+  LogListActivity --> LogDatabase : uses
+  SummaryActivity --> LogDatabase : uses
+
+  LogDatabase ..> LogDao : provides
+  LogDao --> LogEntry : CRUD
+  LogDao --> EmotionCount : returns
+  LogDao --> DailyEmotionCount : returns
+  LogDao --> DailyTotal : returns
+
+  LogListActivity --> LogAdapter : uses
+  LogAdapter --> LogEntry : binds
+
+  MainActivity ..> LogListActivity : startActivity()
+  MainActivity ..> SummaryActivity : startActivity()
