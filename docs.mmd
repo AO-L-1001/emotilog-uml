@@ -4,19 +4,19 @@ classDiagram
     + onCreate(Bundle) void
     - setupButton(int,String) void
     <<Responsibilities>>
-    主界面；按钮写库；导航到列表与汇总
+    Main screen; record emotion on button click; navigate to LogListActivity and SummaryActivity
   }
 
   class LogListActivity{
     + onCreate(Bundle) void
     <<Responsibilities>>
-    读取所有日志并用RecyclerView展示；返回主界面
+    Display all logs with RecyclerView (emotion + timestamp); allow user to return to main screen
   }
 
   class SummaryActivity{
     + onCreate(Bundle) void
     <<Responsibilities>>
-    计算并展示每日总结（计数+频率）；清空与返回
+    Show daily summary: emotion counts and frequencies; provide clear-all and back functionality
   }
 
   class LogEntry{
@@ -25,7 +25,7 @@ classDiagram
     + long timestamp
     + LogEntry(String,long)
     <<Responsibilities>>
-    日志实体：一次点击的表情与时间戳
+    Entity class; store each logged emotion and its timestamp
   }
 
   class LogDao{
@@ -37,7 +37,7 @@ classDiagram
     + getDailyTotals() List~DailyTotal~
     + clearAll() void
     <<Responsibilities>>
-    读写与统计查询
+    Data access operations: insert, query logs, aggregate summaries, and clear logs
   }
 
   class LogDatabase{
@@ -45,14 +45,14 @@ classDiagram
     + logDao() LogDao
     + static getInstance(Context) LogDatabase
     <<Responsibilities>>
-    Room数据库单例，提供DAO
+    Room database singleton; provides LogDao
   }
 
   class EmotionCount{
     + String emotion
     + int count
     <<Responsibilities>>
-    总体汇总DTO
+    DTO for total emotion summary
   }
 
   class DailyEmotionCount{
@@ -60,14 +60,14 @@ classDiagram
     + String emotion
     + int count
     <<Responsibilities>>
-    按“天+表情”的计数DTO
+    DTO for daily emotion count
   }
 
   class DailyTotal{
     + String day
     + int total
     <<Responsibilities>>
-    每日总计数DTO
+    DTO for daily total count
   }
 
   class LogAdapter{
@@ -77,7 +77,7 @@ classDiagram
     + onBindViewHolder(...) void
     + getItemCount() int
     <<Responsibilities>>
-    把LogEntry渲染为“表情+时间”
+    RecyclerView adapter: bind LogEntry to item view (emotion + timestamp)
   }
 
   class VH{
