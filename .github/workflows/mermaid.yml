@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write   # 允许工作流向仓库提交生成的图片
+  contents: write   # 允许工作流向仓库提交生成的图片1
 
 jobs:
   build:
