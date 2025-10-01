@@ -1,0 +1,102 @@
+classDiagram
+  class MainActivity{
+    - LogDatabase db
+    + onCreate(Bundle) void
+    - setupButton(int,String) void
+    <<Responsibilities>>
+    主界面；按钮写库；导航到列表与汇总
+  }
+
+  class LogListActivity{
+    + onCreate(Bundle) void
+    <<Responsibilities>>
+    读取所有日志并用RecyclerView展示；返回主界面
+  }
+
+  class SummaryActivity{
+    + onCreate(Bundle) void
+    <<Responsibilities>>
+    计算并展示每日总结（计数+频率）；清空与返回
+  }
+
+  class LogEntry{
+    + int id
+    + String emotion
+    + long timestamp
+    + LogEntry(String,long)
+    <<Responsibilities>>
+    日志实体：一次点击的表情与时间戳
+  }
+
+  class LogDao{
+    <<interface>>
+    + insert(LogEntry) void
+    + getAll() List~LogEntry~
+    + getSummary() List~EmotionCount~
+    + getDailyEmotionCounts() List~DailyEmotionCount~
+    + getDailyTotals() List~DailyTotal~
+    + clearAll() void
+    <<Responsibilities>>
+    读写与统计查询
+  }
+
+  class LogDatabase{
+    - static LogDatabase instance
+    + logDao() LogDao
+    + static getInstance(Context) LogDatabase
+    <<Responsibilities>>
+    Room数据库单例，提供DAO
+  }
+
+  class EmotionCount{
+    + String emotion
+    + int count
+    <<Responsibilities>>
+    总体汇总DTO
+  }
+
+  class DailyEmotionCount{
+    + String day
+    + String emotion
+    + int count
+    <<Responsibilities>>
+    按“天+表情”的计数DTO
+  }
+
+  class DailyTotal{
+    + String day
+    + int total
+    <<Responsibilities>>
+    每日总计数DTO
+  }
+
+  class LogAdapter{
+    - List~LogEntry~ data
+    + LogAdapter(List~LogEntry~)
+    + onCreateViewHolder(...) VH
+    + onBindViewHolder(...) void
+    + getItemCount() int
+    <<Responsibilities>>
+    把LogEntry渲染为“表情+时间”
+  }
+
+  class VH{
+    + TextView tvEmotion
+    + TextView tvTime
+  }
+
+  MainActivity --> LogDatabase : uses
+  LogListActivity --> LogDatabase : uses
+  SummaryActivity --> LogDatabase : uses
+
+  LogDatabase ..> LogDao : provides
+  LogDao --> LogEntry : CRUD
+  LogDao --> EmotionCount : returns
+  LogDao --> DailyEmotionCount : returns
+  LogDao --> DailyTotal : returns
+
+  LogListActivity --> LogAdapter : uses
+  LogAdapter --> LogEntry : binds
+
+  MainActivity ..> LogListActivity : startActivity()
+  MainActivity ..> SummaryActivity : startActivity()
